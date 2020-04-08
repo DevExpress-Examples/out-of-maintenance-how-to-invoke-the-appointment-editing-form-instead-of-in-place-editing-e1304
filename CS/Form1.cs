@@ -11,6 +11,7 @@ using DevExpress.Services;
 using DevExpress.XtraScheduler.Services.Implementation;
 using DevExpress.XtraScheduler.Commands;
 using DevExpress.XtraScheduler.Native;
+using DevExpress.Portable.Input;
 
 namespace HowTo {
     public partial class Form1 : Form {
@@ -31,27 +32,30 @@ namespace HowTo {
             this.oldService = oldService;
         }
         public SchedulerKeyboardHandlerService OldService { get { return oldService; } }
-        #region IKeyboardHandlerService Members
-        public void OnKeyDown(KeyEventArgs e) {
+        #region IKeyboardHandlerService Members       
+
+        public void OnKeyDown(PortableKeyEventArgs e) {
             OldService.OnKeyDown(e);
         }
-        public void OnKeyPress(KeyPressEventArgs e) {            
+
+        public void OnKeyPress(PortableKeyPressEventArgs e) {
             Keys modifier = Form1.ModifierKeys;
-            if ((modifier & Keys.Alt) == 0 && (modifier & Keys.Control) == 0) {
+            if((modifier & Keys.Alt) == 0 && (modifier & Keys.Control) == 0) {
                 SchedulerControl control = (SchedulerControl)oldService.Control.Owner;
                 SchedulerCommand command = null;
-                if (control.SelectedAppointments.Count <= 0)
+                if(control.SelectedAppointments.Count <= 0)
                     command = new NewAppointmentCommand(control);
-                else if (control.SelectedAppointments.Count == 1)
+                else if(control.SelectedAppointments.Count == 1)
                     command = new EditAppointmentQueryCommand(control);
-                if (command != null) {
+                if(command != null) {
                     e.Handled = true;
                     command.Execute();
                 }
-            } else
+            }
+            else
                 OldService.OnKeyPress(e);
         }
-        public void OnKeyUp(KeyEventArgs e) {
+        public void OnKeyUp(PortableKeyEventArgs e) {
             OldService.OnKeyUp(e);
         }
         #endregion
